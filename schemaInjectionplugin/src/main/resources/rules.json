@@ -1,0 +1,13 @@
+{
+  "email": {
+    "minLength": 5,
+    "maxLength": 100
+  },
+  "phoneNumber": {
+    "pattern": "^\\+?[1-9]\\d{1,14}$"
+  },
+  "age": {
+    "min": 18,
+    "max": 120
+  }
+}

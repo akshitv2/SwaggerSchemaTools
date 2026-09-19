@@ -1,1 +1,9 @@
+// settings.gradle
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+    }
+}
+
 rootProject.name = 'demo'
