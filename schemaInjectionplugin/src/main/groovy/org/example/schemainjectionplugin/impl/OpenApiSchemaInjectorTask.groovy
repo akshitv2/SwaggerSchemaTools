@@ -4,7 +4,6 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputDirectory;
-import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
@@ -22,8 +21,8 @@ public abstract class OpenApiSchemaInjectorTask extends DefaultTask {
     @InputDirectory
     public abstract DirectoryProperty getSourceDir();
 
-    @InputFile
-    public abstract RegularFileProperty getRulesJson();
+//    @InputFile
+//    public abstract RegularFileProperty getRulesJson();
 
     @OutputFile
     public abstract RegularFileProperty getReportFile();
@@ -31,24 +30,24 @@ public abstract class OpenApiSchemaInjectorTask extends DefaultTask {
     @TaskAction
     public void execute() throws IOException {
         File sourceDir = getSourceDir().get().getAsFile();
-        File jsonFile = getRulesJson().get().getAsFile();
+        InputStream inputStream = getClass().classLoader.getResourceAsStream("rules.json")
         File reportFile = getReportFile().get().getAsFile();
 
-        RuleEngine ruleEngine = new RuleEngine(jsonFile);
+        RuleEngine ruleEngine = new RuleEngine(inputStream);
         CodeProcessor processor = new CodeProcessor(ruleEngine);
 
         List<ReportEntry> reports = new ArrayList<>();
 
         try (Stream<Path> paths = Files.walk(sourceDir.toPath())) {
             paths.filter(Files::isRegularFile)
-                 .filter(p -> p.toString().endsWith(".java"))
-                 .forEach(path -> {
-                     try {
-                         reports.addAll(processor.processFile(path.toFile()));
-                     } catch (Exception e) {
-                         getLogger().error("Failed to process " + path, e);
-                     }
-                 });
+                    .filter(p -> p.toString().endsWith(".java"))
+                    .forEach(path -> {
+                        try {
+                            reports.addAll(processor.processFile(path.toFile()));
+                        } catch (Exception e) {
+                            getLogger().error("Failed to process " + path, e);
+                        }
+                    });
         }
 
         generateMarkdownReport(reportFile, reports);
@@ -61,7 +60,7 @@ public abstract class OpenApiSchemaInjectorTask extends DefaultTask {
             writer.write("Review this report to verify automatically injected `@Schema` annotations.\n\n");
             writer.write("| Target Class | Target Field | Matched JSON Key | Match Type | Confidence Level | Similarity | Injected Rules |\n");
             writer.write("|:---|:---|:---|:---|:---|:---|:---|\n");
-            
+
             for (ReportEntry r : reports) {
                 writer.write(String.format("| `%s` | `%s` | %s | %s | %s | %s | %s |\n",
                         r.className(), r.fieldName(),

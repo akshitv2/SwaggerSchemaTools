@@ -12,7 +12,7 @@ public class OpenApiSchemaInjectorPlugin implements Plugin<Project> {
             task.setDescription("Scans DTOs and injects Swagger @Schema annotations using rules.json.");
 
             task.getSourceDir().convention(project.getLayout().getProjectDirectory().dir("src/main/java"));
-            task.getRulesJson().convention(project.getLayout().getProjectDirectory().file("rules.json"));
+//            task.getRulesJson().convention(getClass().getResource("/rules.json"));
             task.getReportFile().convention(project.getLayout().getBuildDirectory().file("reports/validation-injection-report.md"));
         });
     }

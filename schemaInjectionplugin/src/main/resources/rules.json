@@ -1,13 +1,52 @@
 {
-  "email": {
-    "minLength": 5,
-    "maxLength": 100
+  "transactionId": {
+    "type": "string",
+    "minLength": 36,
+    "maxLength": 36,
+    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+    "description": "Unique identifier for the transaction (UUID format)"
   },
-  "phoneNumber": {
-    "pattern": "^\\+?[1-9]\\d{1,14}$"
+  "status": {
+    "type": "string",
+    "enum": [
+      "SUCCESS",
+      "PENDING",
+      "FAILED",
+      "REFUNDED"
+    ],
+    "description": "Current execution status of the transaction"
   },
-  "age": {
-    "min": 18,
-    "max": 120
+  "amount": {
+    "type": "number",
+    "format": "double",
+    "minimum": "0.01",
+    "maximum": "9999999999.99",
+    "multipleOf": 0.01,
+    "description": "Transaction monetary amount, restricted to positive values with up to two decimal places"
+  },
+  "timestamp": {
+    "type": "string",
+    "format": "date-time",
+    "description": "Timestamp indicating when the transaction occurred, conforming to RFC 3339 / ISO 8601"
+  },
+  "destinationAccountId": {
+    "type": "string",
+    "minLength": 10,
+    "maxLength": 34,
+    "pattern": "^[A-Z0-9]+$",
+    "description": "Unique identifier or IBAN/account number for the target destination account"
+  },
+  "currency": {
+    "type": "string",
+    "minLength": 3,
+    "maxLength": 3,
+    "pattern": "^[A-Z]{3}$",
+    "description": "Three-letter ISO 4217 currency code (e.g., USD, EUR)"
+  },
+  "memo": {
+    "type": "string",
+    "minLength": 0,
+    "maxLength": 255,
+    "description": "Optional note or reference message attached to the transfer"
   }
 }

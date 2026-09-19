@@ -6,6 +6,7 @@ import org.apache.commons.text.similarity.LevenshteinDistance;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,7 +17,13 @@ public class RuleEngine {
 
     public RuleEngine(File jsonFile) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        this.rules = mapper.readValue(jsonFile, new TypeReference<>() {});
+        this.rules = mapper.readValue(jsonFile, new TypeReference<Map<String, Map<String, Object>>>() {});
+    }
+
+    // Constructor for classpath InputStream fallback
+    public RuleEngine(InputStream jsonStream) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        this.rules = mapper.readValue(jsonStream, new TypeReference<Map<String, Map<String, Object>>>() {});
     }
 
     public MatchResult findMatch(String fieldName) {
@@ -56,7 +63,7 @@ public class RuleEngine {
     }
 
     private String normalize(String input) {
-        String stripped = input.replaceAll("(?i)(DTO|Request|Response|Model|VO)$", "");
+        String stripped = input.replaceAll("(?i)(DTO|Request|Response|Model|VO)\$", "");
         return toCamelCase(stripped);
     }
 
