@@ -1,9 +1,7 @@
 // settings.gradle
 pluginManagement {
-    repositories {
-        mavenLocal()
-        gradlePluginPortal()
-    }
+
+    includeBuild('../../schemaInjectionplugin')
 }
 
 rootProject.name = 'demo'
