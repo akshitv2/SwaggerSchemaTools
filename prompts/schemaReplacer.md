@@ -41,7 +41,8 @@ Git.
     - `pattern` -> `@Schema(pattern = "...")`
     - `min` / `minimum` -> `@Schema(minimum = "X")`
     - `max` / `maximum` -> `@Schema(maximum = "X")`
-
+    - `enum`
+- Implement other common validations which apply to other types for example additional properties, minItems etc using your own judgement
 ---
 
 ### 2. Multi-Tiered Matching Engine (JSON Key Resolution)
@@ -81,3 +82,6 @@ Review this report to verify automatically injected `@Schema` annotations.
 | `UserProfileRequest` | `internalCode` | N/A              | Unmatched          | Manual Action Needed   | N/A        | None                         |
 
 ```
+
+### 4. Plugin Creation (`injectSchema`)
+Finally convert it all into a gradle plugin and put this code behind injectSchema task

@@ -2,31 +2,23 @@ package org.example.schemainjectionplugin.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.apache.commons.text.similarity.LevenshteinDistance
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RuleEngine {
+class RuleEngine {
     private final Map<String, Map<String, Object>> rules;
     private final LevenshteinDistance distance = new LevenshteinDistance();
 
-    public RuleEngine(File jsonFile) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        this.rules = mapper.readValue(jsonFile, new TypeReference<Map<String, Map<String, Object>>>() {});
-    }
 
     // Constructor for classpath InputStream fallback
-    public RuleEngine(InputStream jsonStream) throws IOException {
+    RuleEngine(InputStream jsonStream) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         this.rules = mapper.readValue(jsonStream, new TypeReference<Map<String, Map<String, Object>>>() {});
     }
 
-    public MatchResult findMatch(String fieldName) {
+    MatchResult findMatch(String fieldName) {
         // 1. Exact Match
         if (rules.containsKey(fieldName)) {
             return new MatchResult(fieldName, rules.get(fieldName), "Exact Match", "High", "N/A");
@@ -62,12 +54,12 @@ public class RuleEngine {
         return new MatchResult(null, null, "Unmatched", "Manual Action Needed", "N/A");
     }
 
-    private String normalize(String input) {
+    private static String normalize(String input) {
         String stripped = input.replaceAll("(?i)(DTO|Request|Response|Model|VO)\$", "");
         return toCamelCase(stripped);
     }
 
-    private String toCamelCase(String input) {
+    private static String toCamelCase(String input) {
         Matcher m = Pattern.compile("([-_][a-z0-9])").matcher(input);
         StringBuilder sb = new StringBuilder();
         while (m.find()) {

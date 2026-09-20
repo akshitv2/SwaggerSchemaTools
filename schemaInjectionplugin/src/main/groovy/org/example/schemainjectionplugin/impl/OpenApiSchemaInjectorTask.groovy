@@ -16,19 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public abstract class OpenApiSchemaInjectorTask extends DefaultTask {
+abstract class OpenApiSchemaInjectorTask extends DefaultTask {
 
     @InputDirectory
-    public abstract DirectoryProperty getSourceDir();
-
-//    @InputFile
-//    public abstract RegularFileProperty getRulesJson();
+    abstract DirectoryProperty getSourceDir();
 
     @OutputFile
-    public abstract RegularFileProperty getReportFile();
+    abstract RegularFileProperty getReportFile();
 
     @TaskAction
-    public void execute() throws IOException {
+    void execute() throws IOException {
         File sourceDir = getSourceDir().get().getAsFile();
         InputStream inputStream = getClass().classLoader.getResourceAsStream("rules.json")
         File reportFile = getReportFile().get().getAsFile();
@@ -53,7 +50,7 @@ public abstract class OpenApiSchemaInjectorTask extends DefaultTask {
         generateMarkdownReport(reportFile, reports);
     }
 
-    private void generateMarkdownReport(File reportFile, List<ReportEntry> reports) throws IOException {
+    private static void generateMarkdownReport(File reportFile, List<ReportEntry> reports) throws IOException {
         reportFile.getParentFile().mkdirs();
         try (FileWriter writer = new FileWriter(reportFile)) {
             writer.write("# OAS Validation Injection Summary Report\n\n");

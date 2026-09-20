@@ -1,6 +1,6 @@
 package org.example.schemainjectionplugin.impl;
 
-public record ReportEntry(
+record ReportEntry(
         String className,
         String fieldName,
         String jsonKey,

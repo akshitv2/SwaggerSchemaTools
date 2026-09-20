@@ -8,7 +8,7 @@
   },
   "status": {
     "type": "string",
-    "enum": [
+    "allowableValues": [
       "SUCCESS",
       "PENDING",
       "FAILED",
