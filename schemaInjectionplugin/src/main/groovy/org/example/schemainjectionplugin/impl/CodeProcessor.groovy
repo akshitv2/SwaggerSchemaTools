@@ -1,41 +1,24 @@
-package org.example.schemainjectionplugin.impl;
+package org.example.schemainjectionplugin.impl
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.ArrayInitializerExpr;
-import com.github.javaparser.ast.expr.BooleanLiteralExpr;
-import com.github.javaparser.ast.expr.DoubleLiteralExpr;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.IntegerLiteralExpr;
-import com.github.javaparser.ast.expr.NormalAnnotationExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.StaticJavaParser
+import com.github.javaparser.ast.CompilationUnit
+import com.github.javaparser.ast.NodeList
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration
+import com.github.javaparser.ast.body.FieldDeclaration
+import com.github.javaparser.ast.body.VariableDeclarator
+import com.github.javaparser.ast.expr.*
 
-import java.io.File;
-import java.io.FileWriter;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.lang.reflect.Array
 
 class CodeProcessor {
     private final RuleEngine ruleEngine;
     private static final String SCHEMA_IMPORT = "io.swagger.v3.oas.annotations.media.Schema";
-    private static final Expression ADDITIONAL_PROPS_FALSE =
-            StaticJavaParser.parseExpression("Schema.AdditionalPropertiesValue.FALSE");
 
     CodeProcessor(RuleEngine ruleEngine) {
         this.ruleEngine = ruleEngine;
     }
 
     List<ReportEntry> processFile(File javaFile) throws Exception {
-        return processFile(javaFile, true);
-    }
-
-    List<ReportEntry> processFile(File javaFile, boolean disallowAdditionalProperties) throws Exception {
         List<ReportEntry> reports = new ArrayList<>();
         CompilationUnit cu = StaticJavaParser.parse(javaFile);
         boolean modified = false;
@@ -44,18 +27,6 @@ class CodeProcessor {
 
         for (ClassOrInterfaceDeclaration clazz : classes) {
             String className = clazz.getNameAsString();
-
-            // Add additionalProperties = FALSE at class level for object type definitions
-            if (disallowAdditionalProperties) {
-                if (clazz.getAnnotationByName("Schema").isEmpty()) {
-                    NormalAnnotationExpr classSchema = new NormalAnnotationExpr();
-                    classSchema.setName("Schema");
-                    classSchema.addPair("additionalProperties", ADDITIONAL_PROPS_FALSE);
-                    clazz.addAnnotation(classSchema);
-                    modified = true;
-                    reports.add(new ReportEntry(className, "[Class]", "additionalProperties", "Object Schema", "1.0", "N/A", "additionalProperties=Schema.AdditionalPropertiesValue.FALSE"));
-                }
-            }
 
             for (FieldDeclaration field : clazz.getFields()) {
                 if (field.getAnnotationByName("Schema").isPresent()) {
@@ -80,12 +51,7 @@ class CodeProcessor {
                                     injected.add(k + "=" + v);
                                 }
                             }
-                        });
-
-                        if (disallowAdditionalProperties && !schemaExpr.getPairs().isEmpty()) {
-                            schemaExpr.addPair("additionalProperties", ADDITIONAL_PROPS_FALSE);
-                            injected.add("additionalProperties=Schema.AdditionalPropertiesValue.FALSE");
-                        }
+                        })
 
                         if (!schemaExpr.getPairs().isEmpty()) {
                             field.addAnnotation(schemaExpr);
